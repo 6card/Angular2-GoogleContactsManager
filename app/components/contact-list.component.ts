@@ -3,11 +3,17 @@ import { Http, Response } from "@angular/http";
 
 import {AuthService} from "../services/auth.service";
 
+const RELS = {
+    "photo": "http://schemas.google.com/contacts/2008/rel#photo",
+}
+
 class PhoneNumber {
     title: string; //"84956054561"
     primary: boolean; //"true"
     rel: string; //"http://schemas.google.com/g/2005#mobile"
     uri: string; //"tel:+7-495-605-45-61"
+
+    
 
     constructor(obj: Object) {
         this.title = obj['$t'];
@@ -21,6 +27,7 @@ class PhoneNumber {
         else
             return [];
     }
+
     
 }
 
@@ -28,9 +35,23 @@ class Contact {
     title: string;
     phoneNumbers: PhoneNumber[];
 
+    links: any[]; 
+
     constructor(obj: Object) {
         this.title = obj['title']['$t'];
         this.phoneNumbers = PhoneNumber.fromJSONArray(obj['gd$phoneNumber']);
+        
+        this.links = obj['link'];
+    }
+
+    get avatar() {
+        let photoArray;
+        this.links.forEach(function(item, i) {
+            if (item['rel'] == RELS['photo'] )
+            photoArray = item;
+        });
+        console.log(photoArray);
+        return photoArray;
     }
 
     getPrimaryPhoneNumber() {
@@ -50,6 +71,7 @@ class Contact {
         
         <div class="ui list" *ngIf="contacts.length > 0">
             <div class="item" *ngFor="let contact of contacts">
+                {{contact.avatar}}
                 <img class="ui avatar image" src="/images/no_avatar.png">
                 <div class="content">
                     <a class="header">{{contact.title}}</a>                     
@@ -82,6 +104,7 @@ export class ContactList {
 			    }, 
                 err => {console.error(err);}
             );
+        console.log(this.contacts);
     }
 
     
