@@ -50,7 +50,7 @@ class Contact {
         
         <div class="ui list" *ngIf="contacts.length > 0">
             <div class="item" *ngFor="let contact of contacts">
-                <img class="ui avatar image" src="/images/avatar/small/helen.jpg">
+                <img class="ui avatar image" src="/images/no_avatar.png">
                 <div class="content">
                     <a class="header">{{contact.title}}</a>                     
                      <div class="description">{{contact.getPrimaryPhoneNumber()}}</div>
@@ -75,7 +75,7 @@ export class ContactList {
 
     getContacts() {
         //&max-results=1000
-        this.http.get('https://www.google.com/m8/feeds/contacts/default/full?v=3.0&alt=json&access_token='+this.authService.getToken())
+        this.http.get('https://www.google.com/m8/feeds/contacts/default/full?v=3.0&max-results=1000&alt=json&access_token='+this.authService.getToken())
             .map((res:Response) => res.json())
 			.subscribe(data => {
 			    	this.contacts = Contact.fromJSONArray(data.feed.entry);
