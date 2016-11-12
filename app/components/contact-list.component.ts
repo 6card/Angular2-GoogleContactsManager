@@ -1,5 +1,5 @@
 import {Component} from "@angular/core";
-import { Http, Response } from "@angular/http";
+import { Http, Response, URLSearchParams } from "@angular/http";
 
 import {AuthService} from "../services/auth.service";
 
@@ -97,7 +97,13 @@ export class ContactList {
 
     getContacts() {
         //&max-results=1000
-        this.http.get('https://www.google.com/m8/feeds/contacts/default/full?v=3.0&max-results=1000&alt=json&access_token='+this.authService.getToken())
+        let params: URLSearchParams = new URLSearchParams();
+
+        params.set('v', '3.0');
+        params.set('alt', 'json');
+        params.set('access_token', this.authService.getToken());
+
+        this.http.get('https://www.google.com/m8/feeds/contacts/default/full', {search: params})
             .map((res:Response) => res.json())
 			.subscribe(data => {
 			    	this.contacts = Contact.fromJSONArray(data.feed.entry);
