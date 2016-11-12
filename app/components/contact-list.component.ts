@@ -47,13 +47,16 @@ class Contact {
     selector: 'contact-list',
     template: `
         <button *ngIf="authenticated" (click)="getContacts()" class="nav-link btn btn-danger-outline" href="#">Get Contacts</button>                 
-    
-        <ul *ngIf="contacts.length > 0">
-            <li *ngFor="let contact of contacts">
-                {{contact.title}} {{contact.getPrimaryPhoneNumber()}}
-                <button href="#">Edit</button>
-            </li>
-        </ul>
+        
+        <div class="ui list" *ngIf="contacts.length > 0">
+            <div class="item" *ngFor="let contact of contacts">
+                <img class="ui avatar image" src="/images/avatar/small/helen.jpg">
+                <div class="content">
+                    <a class="header">{{contact.title}}</a>                     
+                     <div class="description">{{contact.getPrimaryPhoneNumber()}}</div>
+                </div>
+            </div>
+        </div>
     `
 })
 
