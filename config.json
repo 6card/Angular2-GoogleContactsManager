@@ -1,0 +1,9 @@
+{
+  "callbackUrl": "http://localhost:3000",
+  "userInfoUrl": "https://www.googleapis.com/oauth2/v1/userinfo",
+  "userInfoNameField": "displayName",
+  "implicitGrantUrl": "https://accounts.google.com/o/oauth2/v2/auth?redirect_uri=__callbackUrl__&response_type=token&client_id=__clientId__&scope=__scopes__",
+  "logoutUrl": "https://accounts.google.com/o/oauth2/revoke?token=__access_token__",
+  "clientId": "552139611290-f9fsrcnblpj23h0ikm49iifvfa425n2h.apps.googleusercontent.com",
+  "scopes": "https://www.google.com/m8/feeds/"
+}
