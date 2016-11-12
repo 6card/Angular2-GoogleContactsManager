@@ -50,7 +50,7 @@ class Contact {
             if (item['rel'] == RELS['photo'] )
             photoArray = item;
         });
-        console.log(photoArray);
+        console.log()
         return photoArray;
     }
 
