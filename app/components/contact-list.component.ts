@@ -36,28 +36,47 @@ class Contact {
     phoneNumbers: PhoneNumber[];
 
     links: any[]; 
-    token: string;
+
+    photoLink: string;
+    selfLink: string;
+    editLink: string;
+
     constructor(obj: Object, token: string) {
         this.title = obj['title']['$t'];
         this.phoneNumbers = PhoneNumber.fromJSONArray(obj['gd$phoneNumber']);
-        
+
         this.links = obj['link'];
 
-        this.token = token;
-    }
-
-    get avatar() {
-        let photoLink: string = '/images/no_avatar.png';
-        let token = this.token; 
-        this.links.forEach(function(item, i) {
-            if (item['rel'] == RELS['photo'] && item['gd$etag'] !== undefined) {
-                photoLink =  Contact.updateQueryStringParameter(item['href'], 'access_token', token); 
-            }                
-                //              
+        this.links.map(item => {
+            if (item['rel'] == RELS['photo'] && item['gd$etag'] !== undefined)
+                this.photoLink = Contact.updateQueryStringParameter(item['href'], 'access_token', token); 
+            else if (item['rel'] == 'self')                
+                this.selfLink = Contact.updateQueryStringParameter(item['href'], 'access_token', token);
+            else if (item['rel'] == 'edit')      
+                this.editLink = /Contact.updateQueryStringParameter(item['href'], 'access_token', token);        
         });
 
-        //console.log()
-        return photoLink;
+        
+    }
+    
+    get avatar() {
+        let photoLink: string = '/images/no_avatar.png';
+        
+        if (this.photoLink !== undefined)
+            return this.photoLink;
+        else
+            return photoLink;
+    }
+
+    
+
+    getPrimaryPhoneNumber() {
+        if (this.phoneNumbers.length > 0)
+            return this.phoneNumbers[0].title;
+    }
+
+    static fromJSONArray(array: Array<Object>, token: string): Contact[] {
+        return array.map(obj => new Contact(obj, token));
     }
 
     static updateQueryStringParameter(uri, key, value) {
@@ -70,16 +89,17 @@ class Contact {
         else {
             return uri + separator + key + "=" + value;
         }
-        
-    }
 
-    getPrimaryPhoneNumber() {
-        if (this.phoneNumbers.length > 0)
-            return this.phoneNumbers[0].title;
-    }
-
-    static fromJSONArray(array: Array<Object>, token: string): Contact[] {
-        return array.map(obj => new Contact(obj, token));
+        /*
+        let separator = uri.indexOf('?') !== -1 ? "&" : "?";
+        let stringValues = '';
+        for (var k in key_value){
+            if (key_value.hasOwnProperty(k)) {
+                stringValues += k + "=" + key_value[k]
+            }
+        } 
+        return uri + separator + stringValues;
+        */
     }
 }
 
@@ -92,7 +112,7 @@ class Contact {
             <div class="item" *ngFor="let contact of contacts">                
                 <img class="ui avatar image" src="{{contact.avatar}}">
                 <div class="content">
-                    <a class="header">{{contact.title}}</a>                     
+                    <a class="header" href="{{contact.editLink}}">{{contact.title}}</a>                     
                      <div class="description">{{contact.getPrimaryPhoneNumber()}}</div>
                 </div>
             </div>
