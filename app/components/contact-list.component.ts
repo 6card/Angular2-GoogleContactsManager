@@ -36,22 +36,41 @@ class Contact {
     phoneNumbers: PhoneNumber[];
 
     links: any[]; 
-
-    constructor(obj: Object) {
+    token: string;
+    constructor(obj: Object, token: string) {
         this.title = obj['title']['$t'];
         this.phoneNumbers = PhoneNumber.fromJSONArray(obj['gd$phoneNumber']);
         
         this.links = obj['link'];
+
+        this.token = token;
     }
 
     get avatar() {
-        let photoArray;
+        let photoLink: string = '/images/no_avatar.png';
+        let token = this.token; 
         this.links.forEach(function(item, i) {
-            if (item['rel'] == RELS['photo'] )
-            photoArray = item;
+            if (item['rel'] == RELS['photo'] && item['gd$etag'] !== undefined) {
+                photoLink =  Contact.updateQueryStringParameter(item['href'], 'access_token', token); 
+            }                
+                //              
         });
-        console.log()
-        return photoArray;
+
+        //console.log()
+        return photoLink;
+    }
+
+    static updateQueryStringParameter(uri, key, value) {
+        let re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+        let separator = uri.indexOf('?') !== -1 ? "&" : "?";
+        
+        if (uri.match(re)) {
+            return uri.replace(re, '$1' + key + "=" + value + '$2');
+        }
+        else {
+            return uri + separator + key + "=" + value;
+        }
+        
     }
 
     getPrimaryPhoneNumber() {
@@ -59,8 +78,8 @@ class Contact {
             return this.phoneNumbers[0].title;
     }
 
-    static fromJSONArray(array: Array<Object>): Contact[] {
-        return array.map(obj => new Contact(obj));
+    static fromJSONArray(array: Array<Object>, token: string): Contact[] {
+        return array.map(obj => new Contact(obj, token));
     }
 }
 
@@ -70,9 +89,8 @@ class Contact {
         <button *ngIf="authenticated" (click)="getContacts()" class="nav-link btn btn-danger-outline" href="#">Get Contacts</button>                 
         
         <div class="ui list" *ngIf="contacts.length > 0">
-            <div class="item" *ngFor="let contact of contacts">
-                {{contact.avatar}}
-                <img class="ui avatar image" src="/images/no_avatar.png">
+            <div class="item" *ngFor="let contact of contacts">                
+                <img class="ui avatar image" src="{{contact.avatar}}">
                 <div class="content">
                     <a class="header">{{contact.title}}</a>                     
                      <div class="description">{{contact.getPrimaryPhoneNumber()}}</div>
@@ -103,10 +121,12 @@ export class ContactList {
         params.set('alt', 'json');
         params.set('access_token', this.authService.getToken());
 
+        params.set('max-results', '1000');
+
         this.http.get('https://www.google.com/m8/feeds/contacts/default/full', {search: params})
             .map((res:Response) => res.json())
 			.subscribe(data => {
-			    	this.contacts = Contact.fromJSONArray(data.feed.entry);
+			    	this.contacts = Contact.fromJSONArray(data.feed.entry, this.authService.getToken());
 			    }, 
                 err => {console.error(err);}
             );
