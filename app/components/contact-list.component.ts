@@ -55,8 +55,6 @@ class Contact {
             else if (item['rel'] == 'edit')      
                 this.editLink = Contact.updateQueryStringParameter(item['href'], 'access_token', token);        
         });
-
-        
     }
 
     get avatar() {
