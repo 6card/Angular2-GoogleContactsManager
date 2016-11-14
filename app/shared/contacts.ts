@@ -52,6 +52,7 @@ export class Contact {
 
     
 
+
     getPrimaryPhoneNumber() {
         if (this.phoneNumbers.length > 0)
             return this.phoneNumbers[0].title;
