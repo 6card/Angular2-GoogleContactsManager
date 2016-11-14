@@ -11,7 +11,6 @@ export class AppComponent {
     title: string;
 
     constructor() {
-        this.title = 'Google Contacts Manager';
-		
+        this.title = 'Google Contacts Manager';	
     }
 }
