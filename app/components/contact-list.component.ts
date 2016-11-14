@@ -2,6 +2,7 @@ import { Component } from "@angular/core";
 import { Http, Response, URLSearchParams } from "@angular/http";
 
 import { AuthService } from "../services/auth.service";
+import { ContactService } from "../services/contact.service";
 import { Contact } from "../shared/contacts";
 
 import { Observable } from 'rxjs/Observable';
@@ -32,7 +33,7 @@ export class ContactList {
 
     contacts: Contact[] = [];
 
-    constructor(private authService: AuthService, private http: Http ) {
+    constructor(private authService: AuthService, private contactService: ContactService, private http: Http ) {
 
     }
 
@@ -41,32 +42,11 @@ export class ContactList {
     }
 
 
-    getContacts() : Observable<Contact[]> {
-        //&max-results=1000
-        let params: URLSearchParams = new URLSearchParams();
-
-        params.set('v', '3.0');
-        params.set('alt', 'json');
-        params.set('access_token', this.authService.getToken());
-
-        //params.set('max-results', '1000');
-
-        return this.http.get('https://www.google.com/m8/feeds/contacts/default/full', {search: params})
-            .map((res:Response) => res.json())
-            .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
-            /*
-			.subscribe(data => {
-			    	this.contacts = Contact.fromJSONArray(data.feed.entry, this.authService.getToken());
-			    }, 
-                err => {console.error(err);}
-            );
-            */
-
-    }
+    
 
     loadContacts() {
         // Get all comments
-         this.getContacts()
+         this.contactService.getContacts()
                 .subscribe(
                     data => this.contacts = data['feed']['entry'].map(item => new Contact(item, this.authService.getToken())), //Bind to view
                     err => {

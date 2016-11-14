@@ -13,6 +13,7 @@ import { ContactDetail } from "./components/contact-detail.component"
 
 import {AuthService} from "./services/auth.service";
 import {WindowService} from "./services/window.service";
+import {ContactService} from "./services/contact.service";
 
 
 
@@ -39,6 +40,6 @@ import {WindowService} from "./services/window.service";
   ],
   declarations: [ AppComponent, Login, ContactList, ContactDetail ],
   bootstrap:    [ AppComponent ],
-  providers: [ AuthService, WindowService ],
+  providers: [ AuthService, WindowService, ContactService ],
 })
 export class AppModule { }
