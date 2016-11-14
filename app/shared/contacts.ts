@@ -1,4 +1,3 @@
-
 const RELS = {
     "photo": "http://schemas.google.com/contacts/2008/rel#photo",
 }
@@ -29,16 +28,24 @@ export class PhoneNumber {
 
 export class Contact {
     title: string;
-    phoneNumbers: PhoneNumber[];
+    phoneNumbers: any[];
 
-    links: any[]; 
 
     photoLink: string;
     selfLink: string;
     contactId: string;
 
-    constructor() {
-
+    constructor(obj, token) {
+        this.title = obj.title.$t;
+        this.phoneNumbers = obj.gd$phoneNumber;
+        obj.link.map(item => {
+            if (item['rel'] == RELS['photo'] && item['gd$etag'] !== undefined)
+                this.photoLink = Contact.updateQueryStringParameter(item['href'], 'access_token', token); 
+            else if (item['rel'] == 'self')                
+                this.selfLink = Contact.updateQueryStringParameter(item['href'], 'access_token', token);
+            else if (item['rel'] == 'edit')      
+                this.contactId = Contact.getContactId(item['href']);        
+        });
     }
 
     get avatar() {
@@ -50,14 +57,13 @@ export class Contact {
             return photoLink;
     }
 
-    
 
-
-    getPrimaryPhoneNumber() {
-        if (this.phoneNumbers.length > 0)
-            return this.phoneNumbers[0].title;
-    }
     /*
+    get primaryPhoneNumber() {
+        if (this.primaryPhoneNumber !== undefined && this.phoneNumbers.length > 0)
+            return this.phoneNumbers[0].$t;
+    }
+
     static fromJSONArray(array: Array<Object>, token: string): Contact[] {
         return array.map(obj => new Contact(obj, token));
     }

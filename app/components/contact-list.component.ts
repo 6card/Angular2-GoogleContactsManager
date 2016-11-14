@@ -9,6 +9,7 @@ import { Observable } from 'rxjs/Observable';
 // Import RxJs required methods
 import 'rxjs/add/operator/map';
 import 'rxjs/add/operator/catch';
+import 'rxjs/add/observable/throw';
 
 @Component({
     selector: 'contact-list',
@@ -19,7 +20,7 @@ import 'rxjs/add/operator/catch';
             <div class="item" *ngFor="let contact of contacts">                
                 <img class="ui avatar image" src="{{contact.avatar}}">
                 <div class="content">
-                    <a class="header" [routerLink]="['/contact', contact.contactId]">{{contact.title.$t}}</a>                     
+                    <a class="header" [routerLink]="['/contact', contact.contactId]">{{contact.title}}</a>                     
 
                 </div>
             </div>
@@ -51,7 +52,7 @@ export class ContactList {
         //params.set('max-results', '1000');
 
         return this.http.get('https://www.google.com/m8/feeds/contacts/default/full', {search: params})
-            .map((res:Response) => res.json().feed.entry)
+            .map((res:Response) => res.json())
             .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
             /*
 			.subscribe(data => {
@@ -67,11 +68,12 @@ export class ContactList {
         // Get all comments
          this.getContacts()
                 .subscribe(
-                    contacts => this.contacts = contacts, //Bind to view
+                    data => this.contacts = data['feed']['entry'].map(item => new Contact(item, this.authService.getToken())), //Bind to view
                     err => {
                         // Log errors if any
                         console.log(err);
                     });
+        console.log(this.contacts);
     }
 
     
