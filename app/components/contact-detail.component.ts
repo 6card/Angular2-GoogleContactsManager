@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, DoCheck } from "@angular/core";
 import { Router, ActivatedRoute, Params } from '@angular/router';
 import { Http, Response, URLSearchParams } from "@angular/http";
 
@@ -11,49 +11,61 @@ import { Observable } from 'rxjs/Observable';
 @Component({
     selector: 'contact-detail',
     template: `
-        <div class="ui list" *ngIf="contact">
-            <div class="item">                
 
-                <div class="content">
-                    {{contact.title}}                  
-                     <div class="description">phone</div>
-                </div>
+        <div class="item" *ngIf="contact && authenticated">                
+            <img class="ui avatar image" src="{{getAvatarItem(contact)}}">
+            <div class="content">
+                {{contact.title}}                  
+                <div class="description">{{contact.primaryPhoneNumber}}</div>
             </div>
         </div>
-        <button (click)="consoleShow()" class="nav-link btn btn-danger-outline" href="#">CONSOLE!!!</button>                 
-        
+
     `
 })
 
-export class ContactDetail implements OnInit  {
+export class ContactDetailComponent implements OnInit, DoCheck {
 
     contact: Contact;
-    contactId: string;
-    constructor(private authService: AuthService, private contactService: ContactService, private http: Http, private route: ActivatedRoute ) {
+    contactId: number;
 
+    constructor(private authService: AuthService, private contactService: ContactService, private http: Http, private route: ActivatedRoute, private router: Router ) {
+
+    }
+
+    ngDoCheck() {
+        if (this.authenticated && !this.contact)
+            this.loadContact(this.contactId);
     }
 
     ngOnInit() {
         this.route.params.forEach((params: Params) => {
-            this.contactId = params['id']; // (+) converts string 'id' to a number
-            this.loadContact(this.contactId);
-        });
+            this.contactId = params['id'];
+            if (this.authenticated)
+                this.loadContact(this.contactId);
+        });        
+    }
+
+
+    get authenticated() {
+        return this.authService.isAuthenticated();
     }
 
     loadContact(id) {
-        // Get all comments
          this.contactService.getContact(id)
                 .subscribe(data => {
-			    	this.contact =  new Contact(data['entry'], this.authService.getToken());
+			    	this.contact =  new Contact(data['entry']);
 			    }, 
-                err => {console.error(err);}
+                err => console.error(err)
             );
     }
 
-    consoleShow() {
-        console.log(this.contact);
+    getAvatarItem(contact: Contact) {
+        let photoLink: string = '/images/no_avatar.png';
+        
+        if (contact.photoLink !== undefined)
+            return this.contactService.getAvatarUrl(contact.photoLink);
+        else
+            return photoLink;
     }
-
-    
 
 }

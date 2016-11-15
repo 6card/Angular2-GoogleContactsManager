@@ -8,8 +8,8 @@ import { RouterModule }   from '@angular/router';
 
 import { AppComponent }   from './app.component';
 import { Login } from "./components/login.component";
-import { ContactList } from "./components/contact-list.component"
-import { ContactDetail } from "./components/contact-detail.component"
+import { ContactListComponent } from "./components/contact-list.component"
+import { ContactDetailComponent } from "./components/contact-detail.component"
 
 import {AuthService} from "./services/auth.service";
 import {WindowService} from "./services/window.service";
@@ -30,15 +30,15 @@ import {ContactService} from "./services/contact.service";
       },
       {
         path: 'contacts',
-        component: ContactList
+        component: ContactListComponent
       },
       {
         path: 'contact/:id',
-        component: ContactDetail
+        component: ContactDetailComponent
       }
     ])
   ],
-  declarations: [ AppComponent, Login, ContactList, ContactDetail ],
+  declarations: [ AppComponent, Login, ContactListComponent, ContactDetailComponent ],
   bootstrap:    [ AppComponent ],
   providers: [ AuthService, WindowService, ContactService ],
 })

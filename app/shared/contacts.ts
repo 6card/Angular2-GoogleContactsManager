@@ -28,71 +28,35 @@ export class PhoneNumber {
 
 export class Contact {
     title: string;
-    phoneNumbers: any[];
-
+    phoneNumbers: PhoneNumber[];
 
     photoLink: string;
     selfLink: string;
-    contactId: string;
+    _contactId: string;
 
-    constructor(obj, token) {
-        this.title = obj.title.$t;
-        this.phoneNumbers = obj.gd$phoneNumber;
-        obj.link.map(item => {
+    constructor(obj: Object) {
+        this.title = obj['title']['$t'];
+        if (obj['gd$phoneNumber'])
+            this.phoneNumbers = obj['gd$phoneNumber'].map( number => new PhoneNumber(number) );
+        obj['link'].map(item => {
             if (item['rel'] == RELS['photo'] && item['gd$etag'] !== undefined)
-                this.photoLink = Contact.updateQueryStringParameter(item['href'], 'access_token', token); 
+                this.photoLink = item['href']; 
             else if (item['rel'] == 'self')                
-                this.selfLink = Contact.updateQueryStringParameter(item['href'], 'access_token', token);
+                this.selfLink = item['href'];
             else if (item['rel'] == 'edit')      
-                this.contactId = Contact.getContactId(item['href']);        
+                this._contactId = item['href'];        
         });
     }
 
-    get avatar() {
-        let photoLink: string = '/images/no_avatar.png';
-        
-        if (this.photoLink !== undefined)
-            return this.photoLink;
-        else
-            return photoLink;
-    }
-
-
-    /*
     get primaryPhoneNumber() {
-        if (this.primaryPhoneNumber !== undefined && this.phoneNumbers.length > 0)
-            return this.phoneNumbers[0].$t;
+        if (this.phoneNumbers && this.phoneNumbers.length > 0)
+            return this.phoneNumbers[0].title;
     }
-
-    static fromJSONArray(array: Array<Object>, token: string): Contact[] {
-        return array.map(obj => new Contact(obj, token));
-    }
-    */
-    static getContactId(uri: string) {
+    
+    get contactId() {
         let re = new RegExp("^(http[s]?:\/\/)(.*)\/([a-zA-Z0-9]+)([?].+)?$", "gi");
+        let uri = this._contactId;
         return uri.replace(re, '$3');
     }
 
-    static updateQueryStringParameter(uri, key, value) {
-        let re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
-        let separator = uri.indexOf('?') !== -1 ? "&" : "?";
-        
-        if (uri.match(re)) {
-            return uri.replace(re, '$1' + key + "=" + value + '$2');
-        }
-        else {
-            return uri + separator + key + "=" + value;
-        }
-
-        /*
-        let separator = uri.indexOf('?') !== -1 ? "&" : "?";
-        let stringValues = '';
-        for (var k in key_value){
-            if (key_value.hasOwnProperty(k)) {
-                stringValues += k + "=" + key_value[k]
-            }
-        } 
-        return uri + separator + stringValues;
-        */
-    }
 }

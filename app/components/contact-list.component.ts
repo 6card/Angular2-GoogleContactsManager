@@ -19,17 +19,17 @@ import 'rxjs/add/observable/throw';
         
         <div class="ui list" *ngIf="contacts.length > 0">
             <div class="item" *ngFor="let contact of contacts">                
-                <img class="ui avatar image" src="{{contact.avatar}}">
+                <img class="ui avatar image" src="{{getAvatarItem(contact)}}">
                 <div class="content">
                     <a class="header" [routerLink]="['/contact', contact.contactId]">{{contact.title}}</a>                     
-
+                    <div class="description">{{contact.primaryPhoneNumber}}</div>
                 </div>
             </div>
         </div>
     `
 })
 
-export class ContactList {
+export class ContactListComponent {
 
     contacts: Contact[] = [];
 
@@ -41,19 +41,22 @@ export class ContactList {
         return this.authService.isAuthenticated();
     }
 
-
-    
-
     loadContacts() {
         // Get all comments
          this.contactService.getContacts()
                 .subscribe(
-                    data => this.contacts = data['feed']['entry'].map(item => new Contact(item, this.authService.getToken())), //Bind to view
-                    err => {
-                        // Log errors if any
-                        console.log(err);
-                    });
+                    data => this.contacts = data['feed']['entry'].map(item => new Contact(item)), //Bind to view
+                    err => console.log(err));
         console.log(this.contacts);
+    }
+
+    getAvatarItem(contact: Contact) {
+        let photoLink: string = '/images/no_avatar.png';
+        
+        if (contact.photoLink !== undefined)
+            return this.contactService.getAvatarUrl(contact.photoLink);
+        else
+            return photoLink;
     }
 
     
