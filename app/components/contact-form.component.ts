@@ -8,16 +8,16 @@ import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/fo
     template: `
         <form class="ui form" (ngSubmit)="onSubmit(myForm.value)" [formGroup]="myForm">
             <h4 class="ui dividing header">Contact Manager filer</h4>
-            <div class="field">
-                <label>Name</label>
-                <div class="two fields">
-                <div class="field">
+                
+            <div class="two fields">
+                <div class="field" [ngClass]="{'error' : !myForm.controls['maxResults'].valid}">
+                    <label>Name</label>
                     <input name="maxResults" placeholder="Max results" type="text" [formControl]="myForm.controls['maxResults']">
                     <div *ngIf="!myForm.controls['maxResults'].valid" class="ui error message">maxResults is invalid</div>
                 </div>
                 <div class="field">
+                    <label>Page</label>
                     <input name="page" placeholder="Page" type="text">
-                </div>
                 </div>
             </div>
             <button type="submit" class="ui submit button" [disabled]="submitted">Submit</button>
