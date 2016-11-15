@@ -12,6 +12,12 @@ import { Observable } from 'rxjs/Observable';
     selector: 'contact-detail',
     template: `
 
+        <div *ngIf="!authenticated" class="ui error huge message">
+            <div class="header">
+                Please authenticate first!
+            </div>
+        </div>
+
         <div class="item" *ngIf="contact && authenticated">                
             <img class="ui avatar image" src="{{getAvatarItem(contact)}}">
             <div class="content">

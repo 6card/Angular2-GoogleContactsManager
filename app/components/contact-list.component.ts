@@ -15,8 +15,16 @@ import 'rxjs/add/observable/throw';
 @Component({
     selector: 'contact-list',
     template: `
-        <button *ngIf="authenticated" (click)="loadContacts()" class="nav-link btn btn-danger-outline" href="#">Get Contacts</button>                 
-        
+        <div *ngIf="!authenticated" class="ui error huge message">
+            <div class="header">
+                Please authenticate first!
+            </div>
+        </div>
+
+        <contact-form (formResults)="formUpdated($event)" ></contact-form> 
+
+        <button (click)="loadContacts()" class="ui button" href="#">Get Contacts</button>   
+
         <div class="ui list" *ngIf="contacts.length > 0">
             <div class="item" *ngFor="let contact of contacts">                
                 <img class="ui avatar image" src="{{getAvatarItem(contact)}}">
@@ -33,6 +41,10 @@ export class ContactListComponent {
 
     contacts: Contact[] = [];
 
+    formUpdated(maxResults) {
+        console.log(maxResults);
+    }
+
     constructor(private authService: AuthService, private contactService: ContactService, private http: Http ) {
 
     }
@@ -47,7 +59,6 @@ export class ContactListComponent {
                 .subscribe(
                     data => this.contacts = data['feed']['entry'].map(item => new Contact(item)), //Bind to view
                     err => console.log(err));
-        console.log(this.contacts);
     }
 
     getAvatarItem(contact: Contact) {
