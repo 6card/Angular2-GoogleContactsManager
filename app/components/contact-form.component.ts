@@ -1,5 +1,6 @@
 import { Component, Output, EventEmitter, } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { Router, ActivatedRoute, Params } from '@angular/router';
 //import { Contact } from "../shared/contacts";
 
 @Component({
@@ -35,17 +36,37 @@ export class ContactFormComponent {
 
     maxResults: AbstractControl;
 
-    constructor(fb: FormBuilder) {  
+    constructor(
+        private fb: FormBuilder,
+        private router: Router,
+		private activatedRoute: ActivatedRoute
+    ) {  
         this.myForm = fb.group({  
             'maxResults': ['10', Validators.required]  
         });  
         this.maxResults = this.myForm.controls['maxResults'];
     }
 
+    /*
+    ngOnInit() {
+        //this.route.snapshot.params['id'];
+        this.activatedRoute.params
+        .map(params => params['id'])
+        .subscribe((id) => {
+            this.contactsService
+            .getContact(id)
+            .subscribe(contact => this.contact = contact);
+        });
+    }
+    */
+
     onSubmit(): void {  
-        this.formResults.emit(this.myForm.controls['maxResults'].value);
+        let link = ['/contacts', this.myForm];
+        this.router.navigate(link);
+
+        //this.formResults.emit(this.myForm.controls['maxResults'].value);
         //console.log('you submitted value: ', value['maxResults']); 
 
-           
+        //http://localhost:3000/dashboard;typeObject=1;urlParent=parent1;power=Super%20Flexible   
     }
 }
