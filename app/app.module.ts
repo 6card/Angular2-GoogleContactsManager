@@ -11,6 +11,7 @@ import { Login } from "./components/login.component";
 import { ContactListComponent } from "./components/contact-list.component"
 import { ContactDetailComponent } from "./components/contact-detail.component"
 import { ContactFormComponent } from "./components/contact-form.component"
+import { Pagination } from "./components/pagination.component"
 
 import {AuthService} from "./services/auth.service";
 import {WindowService} from "./services/window.service";
@@ -40,7 +41,14 @@ import {ContactService} from "./services/contact.service";
       }
     ])
   ],
-  declarations: [ AppComponent, Login, ContactListComponent, ContactDetailComponent, ContactFormComponent ],
+  declarations: [ 
+    AppComponent, 
+    Login, 
+    ContactListComponent, 
+    ContactDetailComponent, 
+    ContactFormComponent, 
+    Pagination 
+  ],
   bootstrap:    [ AppComponent ],
   providers: [ AuthService, WindowService, ContactService ],
 })

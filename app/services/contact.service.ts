@@ -25,7 +25,7 @@ export class ContactService {
             params.set('max-results', p.maxResults);
         
         if (p.page) {
-            let startIndex: number = p.maxResults * p.page;
+            let startIndex: string = ((p.maxResults * (p.page - 1)) + 1).toString();
             params.set('start-index', startIndex);
         }
         

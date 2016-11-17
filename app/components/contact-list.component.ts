@@ -21,9 +21,7 @@ import 'rxjs/add/observable/throw';
             </div>
         </div>
 
-        <contact-form (formResults)="formUpdated($event)" [totalContacts]="totalContacts" ></contact-form> 
-
-        <button (click)="loadContacts()" class="ui button" href="#">Get Contacts</button>   
+        <contact-form (formResults)="formUpdated($event)" [totalContacts]="totalContacts" ></contact-form>  
 
         <div class="ui list" *ngIf="contacts.length > 0">
             <div class="item" *ngFor="let contact of contacts">                

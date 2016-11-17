@@ -1,6 +1,9 @@
 import { Component, Input, Output, EventEmitter, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidatorFn } from '@angular/forms';
 import { Router, ActivatedRoute, Params } from '@angular/router';
+
+import { Pagination } from "./pagination.component"
+
 //import { Contact } from "../shared/contacts";
 
 function maxValueValidator(maxValue: number): ValidatorFn {
@@ -39,13 +42,17 @@ function maxValueValidator(maxValue: number): ValidatorFn {
                 <ul>If you are looking for validation you should check out.</ul>
             </div>
 
-        </form>    `
+        </form>
+        <pagination (goToPage)="pageUpdated($event)" [page]="2" [totalItems]="totalContacts" [itemsPerPage]="itemsPerPage"></pagination>
+        `
 })
 
 export class ContactFormComponent implements OnInit {
     @Output() formResults: EventEmitter<any> = new EventEmitter();
 
     @Input() totalContacts: number;
+    page: number;
+    itemsPerPage: number;
 
     myForm: FormGroup;
     submitted = false;
@@ -64,15 +71,28 @@ export class ContactFormComponent implements OnInit {
         //this.maxResults = this.myForm.controls['maxResults'];
     }
 
+    pageUpdated(page: number) {
+        this.page = page;
+        this.myForm.controls['page'].setValue(page);
+
+        let values = <any[]>this.myForm.value;
+        this.formResults.emit(values);
+        
+        let link = ['/contacts', values];
+        this.router.navigate(link); 
+    }
+
     
     ngOnInit() {
         this.activatedRoute.params
         .map(params => params)
         .subscribe((params) => {
+            this.itemsPerPage = params['maxResults'];
             this.myForm.controls['maxResults'].setValue(params['maxResults']);
+            this.page = params['page'];
             this.myForm.controls['page'].setValue(params['page']);
         });
-        this.formResults.emit(this.myForm.value);
+        //this.formResults.emit(this.myForm.value);
     }
     
 
@@ -85,7 +105,7 @@ export class ContactFormComponent implements OnInit {
         this.router.navigate(link);        
 
         
-        //console.log('you submitted value: ', value['maxResults']); 
+        console.log('This page: ' + this.page); 
 
         //http://localhost:3000/dashboard;typeObject=1;urlParent=parent1;power=Super%20Flexible   
     }
