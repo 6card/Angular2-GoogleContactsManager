@@ -1,7 +1,20 @@
-import { Component, Output, EventEmitter, } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, AbstractControl } from '@angular/forms';
+import { Component, Input, Output, EventEmitter, OnInit} from '@angular/core';
+import { FormBuilder, FormGroup, Validators, AbstractControl, ValidatorFn } from '@angular/forms';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 //import { Contact } from "../shared/contacts";
+
+function maxValueValidator(maxValue: number): ValidatorFn {
+  return (control: AbstractControl): {[key: string]: any} => {
+    const value = control.value;
+
+    if (value > maxValue)
+        return null;
+    else
+        return {'maxValue': {maxValue}} 
+        
+        
+  };
+}
 
 @Component({
     moduleId: module.id,
@@ -17,7 +30,7 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
                 </div>
                 <div class="field">
                     <label>Page</label>
-                    <input name="page" placeholder="Page" type="text">
+                    <input name="page" placeholder="Page" type="text" [formControl]="myForm.controls['page']">
                 </div>
             </div>
             <button type="submit" class="ui primary submit button" [disabled]="submitted">Submit</button>
@@ -29,12 +42,15 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
         </form>    `
 })
 
-export class ContactFormComponent {
+export class ContactFormComponent implements OnInit {
     @Output() formResults: EventEmitter<any> = new EventEmitter();
+
+    @Input() totalContacts: number;
+
     myForm: FormGroup;
     submitted = false;
 
-    maxResults: AbstractControl;
+    //maxResults: AbstractControl;
 
     constructor(
         private fb: FormBuilder,
@@ -42,29 +58,33 @@ export class ContactFormComponent {
 		private activatedRoute: ActivatedRoute
     ) {  
         this.myForm = fb.group({  
-            'maxResults': ['10', Validators.required]  
+            'maxResults': ['10', Validators.required],
+            'page': ['1', Validators.required]
         });  
-        this.maxResults = this.myForm.controls['maxResults'];
+        //this.maxResults = this.myForm.controls['maxResults'];
     }
 
-    /*
+    
     ngOnInit() {
-        //this.route.snapshot.params['id'];
         this.activatedRoute.params
-        .map(params => params['id'])
-        .subscribe((id) => {
-            this.contactsService
-            .getContact(id)
-            .subscribe(contact => this.contact = contact);
+        .map(params => params)
+        .subscribe((params) => {
+            this.myForm.controls['maxResults'].setValue(params['maxResults']);
+            this.myForm.controls['page'].setValue(params['page']);
         });
+        this.formResults.emit(this.myForm.value);
     }
-    */
+    
 
     onSubmit(): void {  
-        let link = ['/contacts', this.myForm];
-        this.router.navigate(link);
+        //console.log(this.myForm);
+        let values = <any[]>this.myForm.value;
+        this.formResults.emit(values);
+        
+        let link = ['/contacts', values];
+        this.router.navigate(link);        
 
-        //this.formResults.emit(this.myForm.controls['maxResults'].value);
+        
         //console.log('you submitted value: ', value['maxResults']); 
 
         //http://localhost:3000/dashboard;typeObject=1;urlParent=parent1;power=Super%20Flexible   

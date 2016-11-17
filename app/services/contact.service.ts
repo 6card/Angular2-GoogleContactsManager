@@ -13,14 +13,25 @@ export class ContactService {
 
     }
 
-    getContacts() : Observable<Contact[]> {
+    getContacts(p?: any) : Observable<Contact[]> {
         let params: URLSearchParams = new URLSearchParams();
 
         params.set('v', '3.0');
         params.set('alt', 'json');
         params.set('access_token', this.authService.getToken());
 
-        //params.set('max-results', '1000');
+  
+        if(p.maxResults)
+            params.set('max-results', p.maxResults);
+        
+        if (p.page) {
+            let startIndex: number = p.maxResults * p.page;
+            params.set('start-index', startIndex);
+        }
+        
+        //console.log(p);
+
+        //
 
         return this.http.get('https://www.google.com/m8/feeds/contacts/default/full', {search: params})
             .map((res:Response) => res.json())

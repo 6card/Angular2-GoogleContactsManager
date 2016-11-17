@@ -21,7 +21,7 @@ import 'rxjs/add/observable/throw';
             </div>
         </div>
 
-        <contact-form (formResults)="formUpdated($event)" ></contact-form> 
+        <contact-form (formResults)="formUpdated($event)" [totalContacts]="totalContacts" ></contact-form> 
 
         <button (click)="loadContacts()" class="ui button" href="#">Get Contacts</button>   
 
@@ -41,8 +41,15 @@ export class ContactListComponent {
 
     contacts: Contact[] = [];
 
-    formUpdated(maxResults) {
-        console.log(maxResults);
+    totalContacts: number;
+    itemsPerPage: number;
+    startIndex: number;
+
+
+    formUpdated(params: any) {
+        
+        if (this.authenticated) this.loadContacts(params);
+        else console.log('NOT AUTORIZED!');
     }
 
     constructor(private authService: AuthService, private contactService: ContactService, private http: Http ) {
@@ -53,11 +60,16 @@ export class ContactListComponent {
         return this.authService.isAuthenticated();
     }
 
-    loadContacts() {
+    loadContacts(params?: any) {
         // Get all comments
-         this.contactService.getContacts()
+         this.contactService.getContacts(params)
                 .subscribe(
-                    data => this.contacts = data['feed']['entry'].map(item => new Contact(item)), //Bind to view
+                    data => {
+                            this.contacts = data['feed']['entry'].map(item => new Contact(item));
+                            this.itemsPerPage = data['feed']['openSearch$itemsPerPage']['$t'];
+                            this.startIndex = data['feed']['openSearch$startIndex']['$t'];
+                            this.totalContacts = data['feed']['openSearch$totalResults']['$t'];                            
+                    }, //Bind to view
                     err => console.log(err));
     }
 
