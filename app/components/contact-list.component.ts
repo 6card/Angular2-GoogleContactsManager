@@ -1,5 +1,6 @@
-import { Component, OnChanges } from "@angular/core";
+import { Component, OnChanges, OnInit } from "@angular/core";
 import { Http, Response, URLSearchParams } from "@angular/http";
+import { ActivatedRoute } from '@angular/router';
 
 import { AuthService } from "../services/auth.service";
 import { ContactService } from "../services/contact.service";
@@ -21,7 +22,7 @@ import 'rxjs/add/observable/throw';
             </div>
         </div>
 
-        <contact-form (formResults)="formUpdated($event)" [totalContacts]="totalContacts" [startIndex]="startIndex"></contact-form>  
+        <contact-form (formResults)="formUpdated($event)" [totalContacts]="totalContacts" [startIndex]="startIndex" [currentPage]="currentPage" [itemsPerPage]="itemsPerPage"></contact-form>  
 
         <div class="ui list" *ngIf="contacts.length > 0">
             <div class="item" *ngFor="let contact of contacts">                
@@ -43,6 +44,25 @@ export class ContactListComponent implements OnChanges {
     itemsPerPage: number;
     startIndex: number;
 
+    currentPage: number;
+
+     ngOnInit() {
+        
+        this.activatedRoute.params
+        .map(params => params)
+        .subscribe((params) => {
+            //console.log('URL UPDATED');
+            if (params['maxResults']) {
+                this.itemsPerPage = +params['maxResults'];
+            }
+            if (params['page']) {
+                this.currentPage = +params['page'];
+            }
+            //console.log(this.currentPage);
+        });
+        
+    }
+
 
     formUpdated(params: any) {
         
@@ -50,7 +70,7 @@ export class ContactListComponent implements OnChanges {
         else console.log('NOT AUTORIZED!');
     }
 
-    constructor(private authService: AuthService, private contactService: ContactService, private http: Http ) {
+    constructor(private authService: AuthService, private contactService: ContactService, private http: Http, private activatedRoute: ActivatedRoute ) {
 
     }
 
@@ -68,7 +88,7 @@ export class ContactListComponent implements OnChanges {
                 .subscribe(
                     data => {
                             this.contacts = data['feed']['entry'].map(item => new Contact(item));
-                            this.itemsPerPage = data['feed']['openSearch$itemsPerPage']['$t'];
+                            //this.itemsPerPage = data['feed']['openSearch$itemsPerPage']['$t'];
                             this.startIndex = data['feed']['openSearch$startIndex']['$t'];
                             this.totalContacts = data['feed']['openSearch$totalResults']['$t'];                            
                     }, //Bind to view

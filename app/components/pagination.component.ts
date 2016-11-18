@@ -59,7 +59,6 @@ export class Pagination {
     }
 
     ngOnChanges(changes) {
-        console.log(changes);
 		this.totalPages = this.calculateTotalPages();
 		this.pages = this.getPages(this.page, this.totalPages);
 	}

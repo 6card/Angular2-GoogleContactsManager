@@ -52,8 +52,8 @@ export class ContactFormComponent {
 
     @Input() totalContacts: number;
     @Input() startIndex: number;
-    currentPage: number;
-    itemsPerPage: number;
+    @Input() currentPage: number;
+    @Input() itemsPerPage: number;
 
     myForm: FormGroup;
     submitted = false;
@@ -74,13 +74,19 @@ export class ContactFormComponent {
 
     
     ngOnChanges(changes): void {
-        console.log(changes);
+        //console.log('changes');
+        this.myForm.controls['maxResults'].setValue(this.itemsPerPage);
+        this.myForm.controls['page'].setValue(this.currentPage);
+        this.pushValues();
     }
     
+    /*
     ngOnInit() {
+        
         this.activatedRoute.params
         .map(params => params)
         .subscribe((params) => {
+            console.log('URL UPDATED');
             if (params['maxResults']) {
                 this.itemsPerPage = +params['maxResults'];
                 this.myForm.controls['maxResults'].setValue(params['maxResults']);
@@ -89,10 +95,12 @@ export class ContactFormComponent {
                 this.currentPage = +params['page'];
                 this.myForm.controls['page'].setValue(params['page']);
             }
+            console.log(this.currentPage);
         });
-        //this.formResults.emit(this.myForm.value);
+        
     }
-
+    */
+    
     pushValues(): void {
         let values = this.myForm.value;
         this.formResults.emit(values);
@@ -102,7 +110,7 @@ export class ContactFormComponent {
     }
 
     pageUpdated(page: number) {
-        console.log('PAGE UPDATED 2');
+        //console.log('PAGE UPDATED 2');
         this.currentPage = page;
         this.myForm.controls['page'].setValue(page);
 
