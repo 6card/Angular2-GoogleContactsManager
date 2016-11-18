@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, OnInit} from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, AbstractControl, ValidatorFn } from '@angular/forms';
 import { Router, ActivatedRoute, Params } from '@angular/router';
 
@@ -43,15 +43,16 @@ function maxValueValidator(maxValue: number): ValidatorFn {
             </div>
 
         </form>
-        <pagination (goToPage)="pageUpdated($event)" [page]="2" [totalItems]="totalContacts" [itemsPerPage]="itemsPerPage"></pagination>
+        <pagination (goToPage)="pageUpdated($event)" [page]="currentPage" [totalItems]="totalContacts" [itemsPerPage]="itemsPerPage"></pagination>
         `
 })
 
-export class ContactFormComponent implements OnInit {
+export class ContactFormComponent {
     @Output() formResults: EventEmitter<any> = new EventEmitter();
 
     @Input() totalContacts: number;
-    page: number;
+    @Input() startIndex: number;
+    currentPage: number;
     itemsPerPage: number;
 
     myForm: FormGroup;
@@ -71,42 +72,45 @@ export class ContactFormComponent implements OnInit {
         //this.maxResults = this.myForm.controls['maxResults'];
     }
 
-    pageUpdated(page: number) {
-        this.page = page;
-        this.myForm.controls['page'].setValue(page);
-
-        let values = <any[]>this.myForm.value;
-        this.formResults.emit(values);
-        
-        let link = ['/contacts', values];
-        this.router.navigate(link); 
+    
+    ngOnChanges(changes): void {
+        console.log(changes);
     }
-
     
     ngOnInit() {
         this.activatedRoute.params
         .map(params => params)
         .subscribe((params) => {
-            this.itemsPerPage = params['maxResults'];
-            this.myForm.controls['maxResults'].setValue(params['maxResults']);
-            this.page = params['page'];
-            this.myForm.controls['page'].setValue(params['page']);
+            if (params['maxResults']) {
+                this.itemsPerPage = +params['maxResults'];
+                this.myForm.controls['maxResults'].setValue(params['maxResults']);
+            }
+            if (params['page']) {
+                this.currentPage = +params['page'];
+                this.myForm.controls['page'].setValue(params['page']);
+            }
         });
         //this.formResults.emit(this.myForm.value);
+    }
+
+    pushValues(): void {
+        let values = this.myForm.value;
+        this.formResults.emit(values);
+        
+        let link = ['/contacts', values];
+        this.router.navigate(link);  
+    }
+
+    pageUpdated(page: number) {
+        console.log('PAGE UPDATED 2');
+        this.currentPage = page;
+        this.myForm.controls['page'].setValue(page);
+
+        this.pushValues();
     }
     
 
     onSubmit(): void {  
-        //console.log(this.myForm);
-        let values = <any[]>this.myForm.value;
-        this.formResults.emit(values);
-        
-        let link = ['/contacts', values];
-        this.router.navigate(link);        
-
-        
-        console.log('This page: ' + this.page); 
-
-        //http://localhost:3000/dashboard;typeObject=1;urlParent=parent1;power=Super%20Flexible   
+        this.pushValues();  
     }
 }

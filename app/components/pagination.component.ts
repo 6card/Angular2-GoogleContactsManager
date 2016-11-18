@@ -53,10 +53,16 @@ export class Pagination {
    
 	private pages:Array<any>;
    
-	ngOnInit() {        
+	ngOnInit() {
 		this.totalPages = this.calculateTotalPages();
 		this.pages = this.getPages(this.page, this.totalPages);
     }
+
+    ngOnChanges(changes) {
+        console.log(changes);
+		this.totalPages = this.calculateTotalPages();
+		this.pages = this.getPages(this.page, this.totalPages);
+	}
 	
 	private makePage(number:number, text:string, isActive:boolean):{number: number, text: string, active: boolean} {
         return {
@@ -94,10 +100,10 @@ export class Pagination {
                 endPage = Math.min(startPage + this.maxSize - 1, totalPages);
             }
         }
-
+        
         // Add page number links
         for (var number = startPage; number <= endPage; number++) {
-            let page = this.makePage(number, number.toString(), number === currentPage);
+            let page = this.makePage(number, number.toString(), number === +currentPage);
             pages.push(page);
         }
 
@@ -151,11 +157,5 @@ export class Pagination {
 	private noPrevious():boolean {
         return this.page === 1;
     }
-	
-	ngOnChanges(changes) {
-		this.totalPages = this.calculateTotalPages();
-		this.pages = this.getPages(this.page, this.totalPages);
-	}
-
 
 }

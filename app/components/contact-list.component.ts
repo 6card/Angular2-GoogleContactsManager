@@ -1,4 +1,4 @@
-import { Component } from "@angular/core";
+import { Component, OnChanges } from "@angular/core";
 import { Http, Response, URLSearchParams } from "@angular/http";
 
 import { AuthService } from "../services/auth.service";
@@ -21,7 +21,7 @@ import 'rxjs/add/observable/throw';
             </div>
         </div>
 
-        <contact-form (formResults)="formUpdated($event)" [totalContacts]="totalContacts" ></contact-form>  
+        <contact-form (formResults)="formUpdated($event)" [totalContacts]="totalContacts" [startIndex]="startIndex"></contact-form>  
 
         <div class="ui list" *ngIf="contacts.length > 0">
             <div class="item" *ngFor="let contact of contacts">                
@@ -35,7 +35,7 @@ import 'rxjs/add/observable/throw';
     `
 })
 
-export class ContactListComponent {
+export class ContactListComponent implements OnChanges {
 
     contacts: Contact[] = [];
 
@@ -57,6 +57,10 @@ export class ContactListComponent {
     get authenticated() {
         return this.authService.isAuthenticated();
     }
+
+    ngOnChanges(changes) {
+        console.log('UPDATED LIST');
+	}
 
     loadContacts(params?: any) {
         // Get all comments
