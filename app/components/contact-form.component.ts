@@ -72,12 +72,15 @@ export class ContactFormComponent {
         //this.maxResults = this.myForm.controls['maxResults'];
     }
 
-    
+    //Hook for URL changes
     ngOnChanges(changes): void {
-        //console.log('changes');
-        this.myForm.controls['maxResults'].setValue(this.itemsPerPage);
-        this.myForm.controls['page'].setValue(this.currentPage);
-        this.pushValues();
+        //console.log(changes);
+        if (this.itemsPerPage)
+            this.myForm.controls['maxResults'].setValue(this.itemsPerPage);
+        if (this.currentPage)
+            this.myForm.controls['page'].setValue(this.currentPage);
+        if (this.itemsPerPage && this.currentPage)
+            this.pushValues();
     }
     
     /*
