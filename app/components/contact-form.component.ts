@@ -28,8 +28,14 @@ function maxValueValidator(maxValue: number): ValidatorFn {
                 
             <div class="two fields">
                 <div class="field" [ngClass]="{'error' : !myForm.controls['maxResults'].valid}">
-                    <label>Name</label>
-                    <input name="maxResults" placeholder="Max results" type="text" [formControl]="myForm.controls['maxResults']">
+                    <label>Items per page:</label>
+                    <select  name="maxResults" placeholder="Max results" type="text" [formControl]="myForm.controls['maxResults']">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="25">25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                    </select>
                 </div>
                 <div class="field">
                     <label>Page</label>
@@ -43,7 +49,7 @@ function maxValueValidator(maxValue: number): ValidatorFn {
             </div>
 
         </form>
-        <pagination (goToPage)="pageUpdated($event)" [page]="currentPage" [totalItems]="totalContacts" [itemsPerPage]="itemsPerPage"></pagination>
+        <pagination *ngIf="currentPage" (goToPage)="pageUpdated($event)" [page]="currentPage" [totalItems]="totalContacts" [itemsPerPage]="itemsPerPage"></pagination>
         `
 })
 
@@ -67,7 +73,7 @@ export class ContactFormComponent {
     ) {  
         this.myForm = fb.group({  
             'maxResults': ['10', Validators.required],
-            'page': ['1', Validators.required]
+            'page': ['', Validators.required]
         });  
         //this.maxResults = this.myForm.controls['maxResults'];
     }

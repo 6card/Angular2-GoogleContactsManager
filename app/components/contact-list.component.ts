@@ -22,7 +22,7 @@ import 'rxjs/add/observable/throw';
             </div>
         </div>
 
-        <contact-form (formResults)="formUpdated($event)" [totalContacts]="totalContacts" [startIndex]="startIndex" [currentPage]="currentPage" [itemsPerPage]="itemsPerPage"></contact-form>  
+        <contact-form *ngIf="authenticated" (formResults)="formUpdated($event)" [totalContacts]="totalContacts" [startIndex]="startIndex" [currentPage]="currentPage" [itemsPerPage]="itemsPerPage"></contact-form>  
 
         <div class="ui list" *ngIf="contacts.length > 0">
             <div class="item" *ngFor="let contact of contacts">                
@@ -90,7 +90,9 @@ export class ContactListComponent implements OnChanges {
                             this.contacts = data['feed']['entry'].map(item => new Contact(item));
                             //this.itemsPerPage = data['feed']['openSearch$itemsPerPage']['$t'];
                             this.startIndex = data['feed']['openSearch$startIndex']['$t'];
-                            this.totalContacts = data['feed']['openSearch$totalResults']['$t'];                            
+                            this.totalContacts = data['feed']['openSearch$totalResults']['$t'];  
+                            if (!this.currentPage)
+                                this.currentPage = 1;                          
                     }, //Bind to view
                     err => console.log(err));
     }
