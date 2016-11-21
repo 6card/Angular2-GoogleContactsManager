@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import {Http, Response, URLSearchParams} from "@angular/http";
+import {Http, Headers, RequestOptions, Response, URLSearchParams} from "@angular/http";
 
 import {Observable} from 'rxjs/Rx';
 
@@ -37,6 +37,26 @@ export class ContactService {
             .map((res:Response) => res.json())
             .catch(this.handleError);
 
+    }
+
+    updateContact(id, eTag): Observable<Contact> {
+        let params: URLSearchParams = new URLSearchParams();
+        let bodyString = JSON.stringify(body); // Stringify payload
+
+        let headers = new Headers(); // ... Set content type to JSON
+        headers.append('If-Match', eTag);
+        headers.append('GData-Version', '3.0');
+        headers.append('Content-Type', 'application/atom+xml');
+
+        params.set('v', '3.0');
+        params.set('alt', 'json');
+        params.set('access_token', this.authService.getToken());
+
+        let options = new RequestOptions({ search: params, headers: headers }); // Create a request option
+
+        return this.http.put('https://www.google.com/m8/feeds/contacts/default/full/'+id, body, options)
+            .map((res:Response) => res.json())
+            .catch(this.handleError);
     }
 
     getContact(id): Observable<Contact> {
