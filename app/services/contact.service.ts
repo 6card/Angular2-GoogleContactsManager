@@ -39,7 +39,7 @@ export class ContactService {
 
     }
 
-    updateContact(id, eTag): Observable<Contact> {
+    updateContact(id, body, eTag): Observable<Contact> {
         let params: URLSearchParams = new URLSearchParams();
         let bodyString = JSON.stringify(body); // Stringify payload
 
@@ -48,8 +48,8 @@ export class ContactService {
         headers.append('GData-Version', '3.0');
         headers.append('Content-Type', 'application/atom+xml');
 
-        params.set('v', '3.0');
-        params.set('alt', 'json');
+        //params.set('v', '3.0');
+        //params.set('alt', 'json');
         params.set('access_token', this.authService.getToken());
 
         let options = new RequestOptions({ search: params, headers: headers }); // Create a request option
@@ -62,8 +62,8 @@ export class ContactService {
     getContact(id): Observable<Contact> {
         let params: URLSearchParams = new URLSearchParams();
 
-        params.set('v', '3.0');
-        params.set('alt', 'json');
+        //params.set('v', '3.0');
+        //params.set('alt', 'json');
         params.set('access_token', this.authService.getToken());
 
         return this.http.get('https://www.google.com/m8/feeds/contacts/default/full/'+id, {search: params})

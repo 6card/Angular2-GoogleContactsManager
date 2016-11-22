@@ -146,6 +146,7 @@ export class Pagination {
 	// base class
     private calculateTotalPages():number {
         let totalPages = this.itemsPerPage < 1 ? 1 : Math.ceil(this.totalItems / this.itemsPerPage);
+        //console.log(this.totalItems + ' ' + this.itemsPerPage)
         return Math.max(totalPages || 0, 1);
     }
 	

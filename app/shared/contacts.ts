@@ -7,6 +7,8 @@ export class PhoneNumber {
     primary: boolean; //"true"
     rel: string; //"http://schemas.google.com/g/2005#mobile"
     uri: string; //"tel:+7-495-605-45-61"
+    
+
 
     
 
@@ -29,13 +31,16 @@ export class PhoneNumber {
 export class Contact {
     title: string;
     phoneNumbers: PhoneNumber[];
+    eTag: string;
 
     photoLink: string;
     selfLink: string;
     _contactId: string;
 
     constructor(obj: Object) {
-        this.title = obj['title']['$t'];
+        this.title = obj['title']['$t'];        
+        this.eTag = obj['gd$etag'];
+        
         if (obj['gd$phoneNumber'])
             this.phoneNumbers = obj['gd$phoneNumber'].map( number => new PhoneNumber(number) );
         obj['link'].map(item => {

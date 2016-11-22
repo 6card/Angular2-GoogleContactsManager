@@ -79,6 +79,7 @@ export class ContactFormComponent {
     }
 
     //Hook for URL changes
+    /*
     ngOnChanges(changes): void {
         //console.log(changes);
         if (this.itemsPerPage)
@@ -89,7 +90,7 @@ export class ContactFormComponent {
             this.pushValues();
     }
     
-    /*
+    
     ngOnInit() {
         
         this.activatedRoute.params

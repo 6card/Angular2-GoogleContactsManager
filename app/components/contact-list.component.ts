@@ -1,6 +1,6 @@
 import { Component, OnChanges, OnInit } from "@angular/core";
 import { Http, Response, URLSearchParams } from "@angular/http";
-import { ActivatedRoute } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { AuthService } from "../services/auth.service";
 import { ContactService } from "../services/contact.service";
@@ -47,7 +47,7 @@ export class ContactListComponent implements OnChanges {
     currentPage: number;
 
      ngOnInit() {
-        
+        /*
         this.activatedRoute.params
         .map(params => params)
         .subscribe((params) => {
@@ -60,18 +60,28 @@ export class ContactListComponent implements OnChanges {
             }
             //console.log(this.currentPage);
         });
-        
+        */
     }
 
 
     formUpdated(params: any) {
-        
+        console.log('formUpdated');
         if (this.authenticated) this.loadContacts(params);
         else console.log('NOT AUTORIZED!');
     }
 
-    constructor(private authService: AuthService, private contactService: ContactService, private http: Http, private activatedRoute: ActivatedRoute ) {
-
+    constructor(
+        private authService: AuthService, 
+        private contactService: ContactService, 
+        private http: Http, 
+        private router: Router, 
+        private activatedRoute: ActivatedRoute 
+    ) {
+        /*
+        router.events.subscribe(event=> {
+            console.log(event);
+        });
+        */
     }
 
     get authenticated() {
@@ -84,11 +94,12 @@ export class ContactListComponent implements OnChanges {
 
     loadContacts(params?: any) {
         // Get all comments
+        console.log('loadContacts');
          this.contactService.getContacts(params)
                 .subscribe(
                     data => {
                             this.contacts = data['feed']['entry'].map(item => new Contact(item));
-                            //this.itemsPerPage = data['feed']['openSearch$itemsPerPage']['$t'];
+                            this.itemsPerPage = data['feed']['openSearch$itemsPerPage']['$t'];
                             this.startIndex = data['feed']['openSearch$startIndex']['$t'];
                             this.totalContacts = data['feed']['openSearch$totalResults']['$t'];  
                             if (!this.currentPage)
